@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="user">
+        <label for="user">用户：</label>
+        <input type="text" id="user">
+    </div>
+    <div class="pass">
+        <label for="pass">密码：</label>
+        <input type="password" id="pass">
+    </div>
+    <input type="button" value="注册" id="regBtn">
+    <input type="button" value="登陆" id="loginBtn">
+</body>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+    <script >
+        // 注册
+        $(function(){
+            $('#regBtn').click(function(){
+                $.ajax({
+                    url:'/reg',
+                    data:{user:$('#user').val(),pass:$('#pass').val()},
+                    dataType:'json',
+                    success(res){
+                        if(res.code){
+                            alert('注册失败,'+res.msg)
+                        }else{
+                            alert('注册成功')
+                        }
+                    },
+                    fail(){//通信失败
+                        alert('注册失败，网络不通')
+                    }
+                })
+            })
+        })
+
+        // 登陆
+        $(function(){
+            $('#loginBtn').click(function(){
+                $.ajax({
+                    url:'/login',
+                    data:{user:$('#user').val(),pass:$('#pass').val()},
+                    dataType:'json',
+                    success(res){
+                        console.log()
+                        if(res.code){
+                            alert('登陆失败,'+res.msg)
+                        }else{
+                            alert('登陆成功')
+                        }
+                    },
+                    fail(){//通信失败
+                        alert('登陆失败，网络不通')
+                    }
+                })
+            })
+        })
+    </script>
+</html>

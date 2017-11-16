@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .mine{
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="user">
+        <label for="user">用户：</label>
+        <input type="text" id="user">
+    </div>
+    <div class="pass">
+        <label for="pass">密码：</label>
+        <input type="password" id="pass">
+    </div>
+    <input type="button" value="注册" id="regBtn">
+    <input type="button" value="登陆" id="loginBtn">
+
+    <textarea id="myText" cols="80" rows="4" style="display:block;"></textarea>
+    <div class="sendMsg">
+        <input type="button" value="发送" id="sendBtn">
+    </div>
+    <ul>
+        <!-- <li>
+            <h4>dcbryant</h4>
+            <p>love to learning</p>
+        </li> -->
+    </ul>
+</body>
+    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('ws://localhost:8080/')
+        const $ = (classname) => document.querySelector(classname)
+        const user = $('#user')
+        const pass = $('#pass')
+        const regBtn = $('#regBtn')
+        const loginBtn = $('#loginBtn')
+        const sendBtn = $('#sendBtn')
+        const myText = $('#myText')
+        const ulContent = $('ul')
+        let cur_username = ''
+
+        // 防止出现多次点击，也可以把on换成once
+        socket.on('reg_ret',(code,msg) => {
+            if(code){//code为0
+                alert('注册错误，'+msg)
+            }else{
+                alert('注册成功')
+            }
+        })
+
+        socket.on('login_ret',(code,msg) => {
+            if(code){//code为0
+                alert('登陆错误，'+ msg)
+            }else{
+                alert('登陆成功')
+                cur_username = user.value
+            }
+        })
+
+        socket.on('msg_ret',(code,msg) => {
+            if(code){//code为0
+                alert('消息发送失败，'+ msg)
+            }else{
+                let li = document.createElement('li')
+                li.className = 'mine'
+                li.innerHTML = `<h4>${cur_username}</h4>
+                                <p>${myText.value}</p>`
+                ulContent.appendChild(li)
+                myText.value = ''
+            }
+        })
+
+        socket.on('msg',(name,txt) => {
+            let li = document.createElement('li')
+            li.innerHTML = `<h4>${name}</h4>
+                            <p>${txt}</p>`
+            ulContent.appendChild(li)
+        })
+
+        regBtn.addEventListener('click',function(){
+            socket.emit('reg',user.value,pass.value)
+        })
+        
+        loginBtn.addEventListener('click',function(){
+            socket.emit('login',user.value,pass.value)
+        })
+        
+        sendBtn.addEventListener('click',function(){
+            socket.emit('msg',myText.value)
+        })
+    </script>
+</html>
